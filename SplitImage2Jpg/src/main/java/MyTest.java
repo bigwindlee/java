@@ -17,9 +17,12 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.sun.media.jai.codecimpl.TIFFImageDecoder;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
 
 import java.util.Vector;
 
@@ -27,74 +30,6 @@ public class MyTest {
     static {
         //加载动态链接库
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
-
-    static public String splitTiff(String tiff_path, String outTiffFileName, String[] pages) {
-        // pageNums is a String array of 0-based page numbers.
-        boolean debugOn = true;
-        try {
-            InputStream is = new FileInputStream(tiff_path);
-            SeekableStream ss = SeekableStream.wrapInputStream(is, false);
-
-            TIFFDirectory td = new TIFFDirectory(ss, 0);
-            if (debugOn) {
-                System.out.println("Directory has " + Integer.toString(td.getNumEntries()) + " entries");
-                System.out.println("Getting TIFFFields");
-                System.out.println("X resolution = " + Float.toString(td.getFieldAsFloat(TIFFImageDecoder.TIFF_X_RESOLUTION)));
-                System.out.println("Y resolution = " + Float.toString(td.getFieldAsFloat(TIFFImageDecoder.TIFF_Y_RESOLUTION)));
-                System.out.println("Resolution unit = " + Long.toString(td.getFieldAsLong(TIFFImageDecoder.TIFF_RESOLUTION_UNIT)));
-            }
-            ImageDecoder decodedImage = ImageCodec.createImageDecoder("tiff", ss, null);
-            int count = decodedImage.getNumPages();
-            if (debugOn) {
-                System.out.println("Input image has " + count + " page(s)");
-            }
-            TIFFEncodeParam param = new TIFFEncodeParam();
-            TIFFField tf = td.getField(259); // Compression as specified in the input file
-            param.setCompression(tf.getAsInt(0)); // Set the compression of the output to be the same.
-            param.setLittleEndian(false); // Intel
-            param.setExtraFields(td.getFields());
-            FileOutputStream fOut = new FileOutputStream(outTiffFileName);
-            Vector<RenderedImage> vector = new Vector<RenderedImage>();
-            RenderedImage page0 = decodedImage.decodeAsRenderedImage(Integer.parseInt(pages[0]));
-            BufferedImage img0 = new BufferedImage(page0.getColorModel(), (WritableRaster) page0.getData(), false, null);
-            int pgNum;
-            // Adding the extra pages starts with the second one on the list.
-            for (int i = 1; i < pages.length; i++) {
-                pgNum = Integer.parseInt(pages[i]);
-                if (debugOn) {
-                    System.out.println("Page number " + pgNum);
-                }
-                RenderedImage page = decodedImage.decodeAsRenderedImage(pgNum);
-                if (debugOn) {
-                    System.out.println("Page is " + Integer.toString(page.getWidth()) + " pixels wide and " + Integer.toString(page.getHeight()) + " pixels high.");
-                }
-                if (debugOn) {
-                    System.out.println("Adding page " + pages[i] + " to vector");
-                }
-                vector.add(page);
-            }
-            param.setExtraImages(vector.iterator());
-            ImageEncoder encoder = ImageCodec.createImageEncoder("tiff", fOut, param);
-            if (debugOn) {
-                System.out.println("Encoding page " + pages[0]);
-            }
-            encoder.encode(decodedImage.decodeAsRenderedImage(Integer.parseInt(pages[0])));
-            fOut.close();
-        } catch (Exception e) {
-            System.out.println(e.toString());
-            return ("Not OK " + e.getMessage());
-        }
-        return ("OK");
-    }
-
-    static public void tiff2jpg(String filepath_in, String filepath_out) {
-        try {
-            final BufferedImage tif = ImageIO.read(new File(filepath_in));
-            ImageIO.write(tif, "jpg", new File(filepath_out + "\\test0729.jpg"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     static public void test_splitPdf() {
@@ -106,27 +41,36 @@ public class MyTest {
         }
     }
 
-    static public void testGetBaseName(String filepath) {
-        System.out.println(TaikangSplitJpg.getBaseName(filepath));
+    static public void test_splitTiff() {
+        String tiff_path = "image\\tiff\\55256951_20200702181946.tiff";
+        TaikangSplitJpg.splitTiff(tiff_path, "output_dir");
     }
 
     public static void main(String[] args) {
 
 
         System.out.println("Current Working Directory: " + System.getProperty("user.dir"));
-//        test_splitPdf();
 
-        String tiff_path = "image\\tiff\\55256951_20200702181946.tiff";
-        try {
-            InputStream is = new FileInputStream(tiff_path);
-            SeekableStream ss = SeekableStream.wrapInputStream(is, false);
-            ImageDecoder decodedImage = ImageCodec.createImageDecoder("tiff", ss, null);
-            System.out.println(decodedImage.getNumPages());
+        test_splitPdf();
 
-            //TIFFDirectory td = new TIFFDirectory(ss, 0);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        test_splitTiff();
+
+
+//        splitTiff(tiff_path, "test0729.jpg");
+//        try {
+//            InputStream is = new FileInputStream(tiff_path);
+//            SeekableStream ss = SeekableStream.wrapInputStream(is, false);
+//            ImageDecodeParam imageDecodeParam = new TIFFDecodeParam();
+//            ImageDecoder decodedImage = ImageCodec.createImageDecoder("tiff", ss, imageDecodeParam);
+//            int page_count = decodedImage.getNumPages();
+//            for (int i = 0; i < page_count; i++) {
+//                RenderedImage ri = decodedImage.decodeAsRenderedImage(i);
+//                BufferedImage bi = new BufferedImage(ri.getColorModel(), (WritableRaster) ri.getData(), false, null);
+//                ImageIO.write(bi, "jpg", new File(SplitUtils.getSplittedName(tiff_path, i, 3)));
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
 //        String[] subParts = SplitUtils.splitPath(filepath);

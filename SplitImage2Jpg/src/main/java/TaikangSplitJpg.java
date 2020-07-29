@@ -3,6 +3,7 @@ import java.awt.image.RenderedImage;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.ghost4j.renderer.SimpleRenderer;
@@ -104,11 +105,6 @@ public class TaikangSplitJpg {
         }
     }
 
-    static public String getBaseName(String filepath) {
-        String[] subDirs = SplitUtils.splitPath(filepath);
-        String[] subFileNames = subDirs[subDirs.length - 1].split("\\.");
-        return subFileNames[0];
-    }
 
     static public int splitPdf(String filepath, String outDir) throws Split2JpgException {
         PDFDocument document = new PDFDocument();
@@ -118,7 +114,7 @@ public class TaikangSplitJpg {
             renderer.setResolution(300);
             List<Image> images = renderer.render(document);
             int image_count = images.size();
-            String baseName = getBaseName(filepath);
+            String baseName = SplitUtils.getBaseName(filepath);
             String newFile;
             for (int i = 0; i < image_count; i++) {
                 newFile = String.format("%s-%s.jpg", baseName, SplitUtils.stringRightJust(String.valueOf(i + 1), 3, '0'));
@@ -129,5 +125,16 @@ public class TaikangSplitJpg {
             e.printStackTrace();
             throw new Split2JpgException(-2001, "PDF_SPLIT_ERROR");
         }
+    }
+
+    static public int splitTiff(String filepath, String outDir) {
+        List<Mat> mats = new ArrayList<Mat>();
+        Imgcodecs.imreadmulti(filepath, mats);
+        int image_count = mats.size();
+        for (int i = 0; i < image_count; i++) {
+            String newName = Paths.get(outDir, SplitUtils.getSplittedName(filepath, i, 3)).toString();
+            Imgcodecs.imwrite(newName, mats.get(i));
+        }
+        return image_count;
     }
 }
