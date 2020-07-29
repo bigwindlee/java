@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,14 +17,14 @@ import javax.imageio.ImageIO;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 
-public class TaikangSplitJpg {
+public class HebaoSplitJpg {
     static int shrink_size = 4088950;
 
     static public ImageInfo Split2Jpg(ImageInfo info) {
         String image_path = info.m_image_path;
         String type = info.m_image_type;
         String output_dir = info.m_output_dir;
-        String error_msg = "";
+        String error_msg = "OK";
         int error_code = 0;
         int page_num = 0;
 

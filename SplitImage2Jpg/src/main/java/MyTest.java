@@ -8,7 +8,7 @@ public class MyTest {
 
     static public void test_splitPdf() {
         try {
-            int count = TaikangSplitJpg.splitPdf("image\\pdf\\11707921_20200527095749_211915.pdf", "output_dir");
+            int count = HebaoSplitJpg.splitPdf("image\\pdf\\11707921_20200527095749_211915.pdf", "output_dir");
             System.out.println(String.format("Split into %d jpg files.", count));
         } catch (Exception e) {
             System.out.print(e);
@@ -17,7 +17,7 @@ public class MyTest {
 
     static public void test_splitTiff() {
         String tiff_path = "image\\tiff\\55256951_20200702181946.tiff";
-        TaikangSplitJpg.splitTiff(tiff_path, "output_dir");
+        HebaoSplitJpg.splitTiff(tiff_path, "output_dir");
     }
 
     public static void main(String[] args) {
@@ -28,6 +28,6 @@ public class MyTest {
         test_splitPdf();
 
         test_splitTiff();
-        
+
     }
 }
