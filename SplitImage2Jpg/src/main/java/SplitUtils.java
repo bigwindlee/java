@@ -9,20 +9,24 @@ public class SplitUtils {
         return subFileNames[0];
     }
 
-    public static String[] splitPath(String pathString) {
+    static public String[] splitPath(String pathString) {
         Path path = Paths.get(pathString);
         return StreamSupport.stream(path.spliterator(), false).map(Path::toString).toArray(String[]::new);
     }
 
-    static public String stringRightJust(String s, int width, char fillchar) {
+    static public String stringRightJust(String s, int width, char fill_char) {
         if (s.length() >= width)
             return s;
 
-        String ret = new String(new char[width - s.length()]).replace("\0", String.valueOf(fillchar));
+        String ret = new String(new char[width - s.length()]).replace("\0", String.valueOf(fill_char));
         return ret + s;
     }
 
     static public String getSplittedName(String filepath, int i, int width) {
-        return String.format("%s-%s.jpg", getBaseName(filepath), stringRightJust(String.valueOf(i + 1), 3, '0'));
+        return String.format("%s-%s.jpg", getBaseName(filepath), stringRightJust(String.valueOf(i + 1), width, '0'));
+    }
+
+    static public String getFullSplittedName(String outDir, String filepath, int i, int width) {
+        return Paths.get(outDir, getSplittedName(filepath, i, width)).toString();
     }
 }
