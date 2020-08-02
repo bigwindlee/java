@@ -1,3 +1,5 @@
+package com.taikang.IST.imgConvert;
+
 import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.io.File;
@@ -7,6 +9,7 @@ import java.util.List;
 import org.ghost4j.renderer.SimpleRenderer;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -16,18 +19,19 @@ import javax.imageio.ImageIO;
 
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 
-public class HebaoSplitJpg {
+public class Image2Jpg {
     static int SHRINK_SIZE = 4088950;
 
     static public ImageInfo Split2Jpg(ImageInfo info) {
         String image_path = info.m_image_path;
         String type = info.m_image_type;
         String output_dir = info.m_output_dir;
+        int dpi = info.m_dpi;
         String error_msg = "OK";
         int error_code = 0;
         int page_num = 0;
 
-        ImageInfo ret = new ImageInfo(image_path, type, output_dir, page_num, error_code, error_msg);
+        ImageInfo ret = new ImageInfo(image_path, type, output_dir, dpi, page_num, error_code, error_msg);
 
         if (isImageTypeLegal(type) == false) {
             ret.SetReturns(-1001, "NOT_ACCEPATABLE_IMAGE_FOR_INPUT");
@@ -46,17 +50,9 @@ public class HebaoSplitJpg {
             return ret;
         }
 
-        if (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("jpeg")) {
+        if (type.equalsIgnoreCase("pdf")) {
             try {
-                shrinkJpg(image_path, output_dir, SHRINK_SIZE);
-            } catch (Split2JpgException e) {
-                ret.SetReturns(e.error_code, e.error_msg);
-                return ret;
-            }
-            page_num = 1;
-        } else if (type.equalsIgnoreCase("pdf")) {
-            try {
-                page_num = splitPdf(image_path, output_dir);
+                page_num = splitPdf(image_path, output_dir, dpi);
             } catch (Split2JpgException e) {
                 ret.SetReturns(e.error_code, e.error_msg);
                 return ret;
@@ -64,7 +60,7 @@ public class HebaoSplitJpg {
         } else {
             // TIFF
             try {
-                page_num = splitTiff(image_path, output_dir);
+                page_num = splitTiff(image_path, output_dir, dpi);
             } catch (Split2JpgException e) {
                 ret.SetReturns(e.error_code, e.error_msg);
                 return ret;
@@ -78,8 +74,7 @@ public class HebaoSplitJpg {
 
     static public boolean isImageTypeLegal(String type) {
         return type.equalsIgnoreCase("pdf")
-                || type.equalsIgnoreCase("tiff") || type.equalsIgnoreCase("tif")
-                || type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("jpeg");
+                || type.equalsIgnoreCase("tiff") || type.equalsIgnoreCase("tif");
     }
 
     static public void shrinkJpg(String filepath, String outDir, int shrink_size) throws Split2JpgException {
@@ -109,12 +104,12 @@ public class HebaoSplitJpg {
     }
 
 
-    static public int splitPdf(String filepath, String outDir) throws Split2JpgException {
+    static public int splitPdf(String filepath, String outDir, int dpi) throws Split2JpgException {
         PDFDocument document = new PDFDocument();
         try {
             document.load(new File(filepath));
             SimpleRenderer renderer = new SimpleRenderer();
-            renderer.setResolution(300);
+            renderer.setResolution(dpi);
             List<Image> images = renderer.render(document);
             int image_count = images.size();
             String newFile;
@@ -129,14 +124,23 @@ public class HebaoSplitJpg {
         }
     }
 
-    static public int splitTiff(String filepath, String outDir) throws Split2JpgException {
+    static public int splitTiff(String filepath, String outDir, int dpi) throws Split2JpgException {
+        int quality;
+        if (dpi < 0) {
+            throw new Split2JpgException(-2002, "INVALID_PARAMETER_ERROR");
+        } else if (dpi >= 300) {
+            quality = 100;
+        } else {
+            quality = (int) Math.round(dpi * 1.0 / 300 * 100);
+        }
         List<Mat> mats = new ArrayList<>();
         if (false == Imgcodecs.imreadmulti(filepath, mats)) {
             throw new Split2JpgException(-2001, "IMAGE_DECODE_ERROR");
         }
         int image_count = mats.size();
+        MatOfInt map = new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality);
         for (int i = 0; i < image_count; i++) {
-            Imgcodecs.imwrite(SplitUtils.getFullSplittedName(outDir, filepath, i, 3), mats.get(i));
+            Imgcodecs.imwrite(SplitUtils.getFullSplittedName(outDir, filepath, i, 3), mats.get(i), map);
         }
         return image_count;
     }

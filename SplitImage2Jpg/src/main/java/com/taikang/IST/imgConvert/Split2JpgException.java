@@ -1,3 +1,5 @@
+package com.taikang.IST.imgConvert;
+
 public class Split2JpgException extends Exception {
     public int error_code;
     public String error_msg;
