@@ -20,7 +20,7 @@ import javax.imageio.ImageIO;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 
 public class Image2Jpg {
-    static int SHRINK_SIZE = 4088950;
+    static public int SHRINK_SIZE = 4088950;
 
     static public ImageInfo Split2Jpg(ImageInfo info) {
         String image_path = info.m_image_path;
@@ -77,14 +77,27 @@ public class Image2Jpg {
                 || type.equalsIgnoreCase("tiff") || type.equalsIgnoreCase("tif");
     }
 
-    static public void shrinkJpg(String filepath, String outDir, int shrink_size) throws Split2JpgException {
-        Mat srcImg = imread(filepath);
+    static public ImageInfo shrinkJpg(ImageInfo info, int shrink_size) {
+        String image_path = info.m_image_path;
+        String type = info.m_image_type;
+        String output_dir = info.m_output_dir;
+        int dpi = info.m_dpi;
+        String error_msg = "OK";
+        int error_code = 0;
+        int page_num = 1;
+
+        ImageInfo ret = new ImageInfo(image_path, type, output_dir, dpi, page_num, error_code, error_msg);
+
+
+        Mat srcImg = imread(image_path);
         if (srcImg.empty()) {
-            throw new Split2JpgException(-1004, "IMAGE_FILE_CORRUPT");
+            ret.SetReturns(-1004, "IMAGE_FILE_CORRUPT");
+            return ret;
         }
         MatOfByte bytemat = new MatOfByte();
         if (false == Imgcodecs.imencode(".jpg", srcImg, bytemat)) {
-            throw new Split2JpgException(-2001, "IMAGE_DECODE_ERROR");
+            ret.SetReturns(-2001, "IMAGE_DECODE_ERROR");
+            return ret;
         }
 
         byte[] bytes = bytemat.toArray();
@@ -93,14 +106,16 @@ public class Image2Jpg {
         while (bytes.length > shrink_size) {
             Imgproc.resize(srcImg, dstImg, zero_size, 0.9, 0.9, Imgproc.INTER_AREA);
             if (false == Imgcodecs.imencode(".jpg", dstImg, bytemat)) {
-                throw new Split2JpgException(-2001, "IMAGE_DECODE_ERROR");
+                ret.SetReturns(-2001, "IMAGE_DECODE_ERROR");
+                return ret;
             }
             srcImg = dstImg;
             bytes = bytemat.toArray();
         }
 
         // Write image file
-        Imgcodecs.imwrite(SplitUtils.getFullSplittedName(outDir, filepath, 0, 3), dstImg);
+        Imgcodecs.imwrite(SplitUtils.getFullSplittedName(output_dir, image_path, 0, 3), dstImg);
+        return ret;
     }
 
 
