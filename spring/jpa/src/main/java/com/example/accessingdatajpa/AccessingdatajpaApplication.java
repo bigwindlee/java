@@ -18,6 +18,7 @@ public class AccessingdatajpaApplication {
 
     @Bean /* returns a CommandLineRunner bean that automatically runs the code when the application launches. */
     public CommandLineRunner demo(CustomerRepository repository) {
+        /* 用一个lambda表达式（匿名函数）实现给定接口中声明的方法，就得到一个实现了给定接口的对象！ */
         return (args) -> {
             // save a few customers
             repository.save(new Customer("Jack", "Bauer"));
