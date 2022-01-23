@@ -1,4 +1,4 @@
-# Accessing Data with JPA
+# Accessing data with MySQL
 [Getting Started | Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
 
 #### 要点
