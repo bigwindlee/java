@@ -34,7 +34,10 @@ jar {
 ```
 
 #### Step 6: 理解 gradle wrapper （不用安装gradle也能构建项目）
-执行：gradle wrapper --gradle-version 7.3.3  
+执行：
+```bash
+gradle wrapper --gradle-version 7.3.3  
+```
 生成4个文件，其中2个gradlew脚本。  
 ```
 gradlew
