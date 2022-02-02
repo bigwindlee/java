@@ -3,8 +3,8 @@ apply plugin: 'application'
 
 mainClassName = 'hello.HelloWorld'
 
-repositories { 
-    mavenCentral() 
+repositories {
+    mavenCentral()
 }
 
 sourceCompatibility = 1.8
@@ -12,10 +12,11 @@ targetCompatibility = 1.8
 
 dependencies {
     implementation "joda-time:joda-time:2.2"
+    implementation 'com.insightfullogic:lambda-behave:0.4'
     testImplementation "junit:junit:4.12"
 }
 
 jar {
     archiveBaseName = 'lambda'
-    archiveVersion =  '0.1.0'
+    archiveVersion = '0.1.0'
 }
