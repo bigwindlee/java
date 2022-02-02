@@ -11,3 +11,13 @@ application {
 ```
 - Enable JUnit5, 熟悉`package org.junit.jupiter.api.*`
 - 熟悉`package org.apache.commons.lang3.StringUtils`对字符串功能的增强。
+- Debugging when running tests
+```
+    // Edit Configurations... > Add New Configuration > Remote JVM Debug
+    debugOptions {
+        enabled = true
+        port = 4455
+        server = true
+        suspend = true
+    }
+```    
