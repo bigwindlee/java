@@ -23,7 +23,15 @@ dependencies {
 test {
     useJUnitPlatform()
 
-    jvmArgs '-Dfile.encoding=UTF-8'
+    /*
+    // Edit Configurations... > Add New Configuration > Remote JVM Debug
+    debugOptions {
+        enabled = true
+        port = 4455
+        server = true
+        suspend = true
+    }
+    */
 }
 
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
