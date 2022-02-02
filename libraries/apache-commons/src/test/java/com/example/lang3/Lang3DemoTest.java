@@ -73,7 +73,9 @@ public class Lang3DemoTest {
 
     @Test
     public void givenStringUtilsClass_whenCalleddifference_thenCorrect() {
-        /* str2拿掉与str1的交集，剩下的部分。*/
+        /* str2拿掉与str1的交集，剩下的部分 */
+        // 这里的中文会导致执行 gradle test 时出现乱码，解决方法：在 build.gradle 中添加下面一行：
+        //     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
         assertEquals(StringUtils.difference("abc", "abd"), "d");
     }
 }
