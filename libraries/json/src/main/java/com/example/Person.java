@@ -5,18 +5,22 @@ import com.alibaba.fastjson.annotation.JSONField;
 import java.util.Date;
 
 public class Person {
-    @JSONField(name = "AGE")
+    @JSONField(name = "AGE", serialize = false)
     private int age;
 
-    @JSONField(name = "FULL NAME")
-    private String fullName;
+    @JSONField(name = "LAST NAME", ordinal = 2)
+    private String lastName;
 
-    @JSONField(name = "DATE OF BIRTH")
+    @JSONField(name = "FIRST NAME", ordinal = 1)
+    private String firstName;
+
+    @JSONField(name = "DATE OF BIRTH", format = "yyyy-MM-dd", ordinal = 3)
     private Date dateOfBirth;
 
-    public Person(int age, String fullName, Date dateOfBirth) {
+    public Person(int age, String firstName, String lastName, Date dateOfBirth) {
         this.age = age;
-        this.fullName = fullName;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
     }
 
@@ -28,8 +32,12 @@ public class Person {
         return age;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
     }
 
     public void setAge(int age) {
@@ -40,8 +48,12 @@ public class Person {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setFirstName(String fullName) {
+        this.firstName = firstName;
+    }
+
+    public void setLastName(String fullName) {
+        this.lastName = lastName;
     }
 }
 

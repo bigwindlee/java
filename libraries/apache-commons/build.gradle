@@ -24,7 +24,7 @@ test {
     useJUnitPlatform()
 
     /*
-    // Edit Configurations... > Add New Configuration > Remote JVM Debug
+    // Edit Configurations... > Add New Configuration >
     debugOptions {
         enabled = true
         port = 4455

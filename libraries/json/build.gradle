@@ -28,4 +28,16 @@ dependencies {
 
 test {
     useJUnitPlatform()
+
+    /*
+    // Edit Configurations... > Add New Configuration >
+    debugOptions {
+        enabled = true
+        port = 4455
+        server = true
+        suspend = true
+    }
+    */
 }
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
